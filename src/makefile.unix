@@ -3,12 +3,14 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 USE_UPNP:=0
+USE_IPV6:=1
 USE_WALLET:=1
 
 LINK:=$(CXX)
 ARCH:=$(system lscpu | head -n 1 | awk '{print $2}')
 
 DEFS=-DBOOST_SPIRIT_THREADSAFE
+
 DEFS += -DUSE_SECP256K1
 DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
 LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
@@ -16,10 +18,10 @@ LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
 LMODE = dynamic
 LMODE2 = dynamic
 ifdef STATIC
-	LMODE = static
-	ifeq (${STATIC}, all)
-		LMODE2 = static
-	endif
+    LMODE = static
+    ifeq (${STATIC}, all)
+        LMODE2 = static
+    endif
 endif
 
 LIBS += \
@@ -28,29 +30,30 @@ LIBS += \
 
 # for boost 1.37, add -mt to the boost libraries
 LIBS += \
- -Wl,-B$(LMODE) \
-   -l boost_system$(BOOST_LIB_SUFFIX) \
-   -l boost_filesystem$(BOOST_LIB_SUFFIX) \
-   -l boost_program_options$(BOOST_LIB_SUFFIX) \
-   -l boost_thread$(BOOST_LIB_SUFFIX) \
-   -l db_cxx$(BDB_LIB_SUFFIX) \
-   -l ssl \
-   -l crypto
+    -Wl,-B$(LMODE) \
+    -l boost_system$(BOOST_LIB_SUFFIX) \
+    -l boost_filesystem$(BOOST_LIB_SUFFIX) \
+    -l boost_program_options$(BOOST_LIB_SUFFIX) \
+    -l boost_thread$(BOOST_LIB_SUFFIX) \
+    -l db_cxx$(BDB_LIB_SUFFIX) \
+    -l ssl \
+    -l crypto \
+    -l z \
+    -Wl,-B$(LMODE2) \
+    -l dl \
+    -l pthread
 
 ifndef USE_UPNP
-	override USE_UPNP = -
+    override USE_UPNP = -
 endif
 ifneq (${USE_UPNP}, -)
-	LIBS += -l miniupnpc
-	DEFS += -DUSE_UPNP=$(USE_UPNP)
+    LIBS += -l miniupnpc
+    DEFS += -DUSE_UPNP=$(USE_UPNP)
 endif
 
-LIBS+= \
- -Wl,-B$(LMODE2) \
-   -l z \
-   -l dl \
-   -l pthread
-
+ifneq (${USE_IPV6}, -)
+    DEFS += -DUSE_IPV6=$(USE_IPV6)
+endif
 
 # Hardening
 # Make some classes of vulnerabilities unexploitable in case one is discovered.
@@ -181,46 +184,51 @@ DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 OBJS += obj/txdb-leveldb.o
 leveldb/libleveldb.a:
-	@echo "Building LevelDB ..."; cd leveldb; chmod 755 *;make libleveldb.a libmemenv.a; cd ..;
+    @echo "Building LevelDB ..."; cd leveldb; make libleveldb.a libmemenv.a; cd ..;
 obj/txdb-leveldb.o: leveldb/libleveldb.a
 
 # auto-generated dependencies:
 -include obj/*.P
 
 obj/build.h: FORCE
-	/bin/sh ../share/genbuild.sh obj/build.h
+    /bin/sh ../share/genbuild.sh obj/build.h
 version.cpp: obj/build.h
 DEFS += -DHAVE_BUILD_INFO
 
 obj/scrypt-x86.o: scrypt-x86.S
-	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+    $(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/scrypt-x86_64.o: scrypt-x86_64.S
-	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+    $(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/scrypt-arm.o: scrypt-arm.S
-	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+    $(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/%.o: %.cpp
-	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
-	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
-	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
-	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
-	  rm -f $(@:%.o=%.d)
+    $(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+    @cp $(@:%.o=%.d) $(@:%.o=%.P); \
+    sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+    -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+    rm -f $(@:%.o=%.d)
 
 obj/%.o: %.c
-	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
-	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
-	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
-	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
-	  rm -f $(@:%.o=%.d)
+    $(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
+    @cp $(@:%.o=%.d) $(@:%.o=%.P); \
+    sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+    -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+    rm -f $(@:%.o=%.d)
+
 droidzd: $(OBJS:obj/%=obj/%)
-	$(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
+    $(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
 
 clean:
-	-rm -f droidzd
-	-rm -f obj/*.o
-	-rm -f obj/*.P
-	-rm -f obj/build.h
+    -rm -f droidzd
+    -rm -f obj/*.o
+    -rm -f obj/*.P
+    -rm -f obj-test/*.o
+    -rm -f obj-test/*.P
+    -rm -f obj/build.h
+    -rm -f leveldb/libleveldb.a
+    -rm -f leveldb/libmemenv.a
 
 FORCE:
