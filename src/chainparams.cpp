@@ -56,7 +56,7 @@ public:
         nDefaultPort = 5914;
         nRPCPort = 5915;
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 20);
-		
+        
         const char* pszTimestamp = "http://www.bbc.co.uk/news/uk-35196493";
         std::vector<CTxIn> vin;
         vin.resize(1);
@@ -74,11 +74,11 @@ public:
         genesis.nNonce   = 152456;
 
         hashGenesisBlock = genesis.GetHash();
-		
-		// genesis.GetHash() == 00005e5044b1a81bef73dd7fc302fe157a3537ed5188401622f17e04efb16f20
-		// genesis.hashMerkleRoot == b86d3a400a5040d9e355b9ffb12cc1188c84fb8ac0da24f10d8323c2b87bf93a
-		// genesis.nTime = 1445966961 
-		// genesis.nNonce = 156245 
+        
+        // genesis.GetHash() == 00005e5044b1a81bef73dd7fc302fe157a3537ed5188401622f17e04efb16f20
+        // genesis.hashMerkleRoot == b86d3a400a5040d9e355b9ffb12cc1188c84fb8ac0da24f10d8323c2b87bf93a
+        // genesis.nTime = 1445966961 
+        // genesis.nNonce = 156245 
 
         assert(hashGenesisBlock == uint256("2763a81e7d1c9829c82e06789c2c0ba204182f51f29d58e58681c59151694576"));
         assert(genesis.hashMerkleRoot == uint256("f0e597ad1f9473d01d0593e00333baba4efecf24f52e219203955f8a80825f97"));
@@ -91,6 +91,8 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4);
 
         convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
+
+        nPOSStartBlock = 1;
     }
 
     virtual const CBlock& GenesisBlock() const { return genesis; }
@@ -140,6 +142,7 @@ public:
         base58Prefixes[SECRET_KEY]     = list_of(239);
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x35)(0x87)(0xCF);
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x35)(0x83)(0x94);
+
 
         convertSeed6(vFixedSeeds, pnSeed6_test, ARRAYLEN(pnSeed6_test));
 

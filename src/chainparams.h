@@ -58,7 +58,6 @@ public:
     const vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
     const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
-    int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
     const string& DataDir() const { return strDataDir; }
@@ -67,6 +66,7 @@ public:
     const std::vector<unsigned char> &Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     virtual const vector<CAddress>& FixedSeeds() const = 0;
     int RPCPort() const { return nRPCPort; }
+    int POSStartBlock() const { return nPOSStartBlock; }
 protected:
     CChainParams() {};
 
@@ -77,10 +77,10 @@ protected:
     int nDefaultPort;
     int nRPCPort;
     CBigNum bnProofOfWorkLimit;
-    int nSubsidyHalvingInterval;
     string strDataDir;
     vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
+    int nPOSStartBlock;
 };
 
 /**
