@@ -10,9 +10,7 @@
 
 using namespace std;
 
-
 extern bool IsConfirmedInNPrevBlocks(const CTxIndex& txindex, const CBlockIndex* pindexFrom, int nMaxDepth, int& nActualDepth);
-extern unsigned int nStakeMaxAge;
 
 // Get time weight
 int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd)
@@ -21,7 +19,7 @@ int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd)
     // this change increases active coins participating the hash and helps
     // to secure the network when proof-of-stake difficulty is low
 
-    return nIntervalEnd - nIntervalBeginning - nStakeMinAge, (int64_t) nStakeMaxAge;
+    return nIntervalEnd - nIntervalBeginning - nStakeMinAge;
 }
 
 // Get the last stake modifier and its generation time from a given block
