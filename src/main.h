@@ -82,13 +82,15 @@ static const int64_t MIN_TX_FEE = 10000;
 static const int64_t MIN_RELAY_TX_FEE = MIN_TX_FEE;
 /** No amount larger than this (in satoshi) is valid */
 static const int64_t MAX_MONEY = 80000000 * COIN;
+// Block target spacing
+static const int64_t TARGET_SPACING = 2 * 60;
+// 5% interest annual
+static const int64_t MAX_MINT_PROOF_OF_STAKE = 0.05 * COIN; // 5% interest annual
+//(output to console will be updated)
+static const int64_t COIN_YEAR_REWARD = 5 * CENT;
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
 static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
-static const int64_t TARGET_SPACING = 2 * 60;
-static const int64_t MAX_MINT_PROOF_OF_STAKE = 0.05 * COIN; // 5% interest annual
-static const int64_t COIN_YEAR_REWARD = 5 * CENT; //(output to console will be updated)
-
 
 static const int64_t DRIFT = 600;
 inline int64_t FutureDrift(int64_t nTime) { return nTime + DRIFT; }

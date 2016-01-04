@@ -43,7 +43,6 @@ set<pair<COutPoint, unsigned int> > setStakeSeen;
 CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 
 unsigned int nStakeMinAge = 3 * 60 * 60; // 3 hours
-unsigned int nStakeMaxAge = 4 * 24 * 60 * 60; // 4 days
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 100;
@@ -1151,11 +1150,11 @@ int64_t GetProofOfWorkReward(int nHeight, int64_t nFees)
 {
     int64_t nSubsidy = 0 * COIN;
 
-	//To support coin swap, !! NO PREMINE !!
-	if (nHeight == 1)
-	{
-		nSubsidy = 5500000 * COIN;
-	}
+    // For Droidz swap
+    if (nHeight == 1)
+    {
+        nSubsidy = 5500000 * COIN;
+    }
 	
     return nSubsidy + nFees;
 }
@@ -2447,6 +2446,8 @@ bool CBlock::AcceptBlock()
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
 
+    if (IsProofOfStake() && nHeight < Params().POSStartBlock())
+          return DoS(100, error("AcceptBlock() : reject proof-of-stake at height <= %d", nHeight));
 
     // Check coinbase timestamp
     if (GetBlockTime() > FutureDrift((int64_t)vtx[0].nTime) && IsProofOfStake())
@@ -4238,7 +4239,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue)
 {
-    int64_t ret = blockValue * 10; //
+    int64_t ret = blockValue * 2; // double the standard pos rate or 10% per annum
 
     return ret;
 }
