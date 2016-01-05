@@ -21,9 +21,9 @@ class CValidationState;
 #define START_MASTERNODE_PAYMENTS_TESTNET 1451563200 // Thu, 31 Dec 2015 12:00:00 GMT 
 #define START_MASTERNODE_PAYMENTS 1452772800 //Thu, 14 Jan 2016 12:00:00 GMT
 
-static const int64_t DARKSEND_COLLATERAL = (999.99*COIN);
+static const int64_t DARKSEND_COLLATERAL = (9999.99*COIN);
 static const int64_t DARKSEND_FEE = (0.01*COIN);
-static const int64_t DARKSEND_POOL_MAX = (9999.99*COIN);
+static const int64_t DARKSEND_POOL_MAX = (99999.99*COIN);
 
 /*
     At 10 signatures, 1/2 of the masternode network can be owned by
