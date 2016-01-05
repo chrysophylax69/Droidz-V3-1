@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = Droidz-V3
 VERSION = 3.0.0.0
-INCLUDEPATH += src src/json src/secp256k1 src/qt src/qt/plugins/mrichtexteditor
+INCLUDEPATH += src src/json src/secp256k1/include src/qt src/qt/plugins/mrichtexteditor
 QT += core gui network printsupport
 DEFINES += ENABLE_WALLET
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
