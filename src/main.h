@@ -95,7 +95,7 @@ static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20
 static const int64_t DRIFT = 600;
 inline int64_t FutureDrift(int64_t nTime) { return nTime + DRIFT; }
 
-inline int64_t GetMNCollateral(int nHeight) { return 100000; }
+inline int64_t GetMNCollateral(int nHeight) { return 10000; }
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
